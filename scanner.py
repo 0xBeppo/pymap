@@ -11,7 +11,8 @@ __status__ = "development"
 import sys
 import subprocess
 import shlex
-import time
+import parser
+
 
 class NmapScanner:
 
@@ -39,28 +40,23 @@ class NmapScanner:
         return stdout
             
     def port_scan (self):
-        nmap_query=(f'{self.nmap_path} -sS -p- --open --min-rate 2000 --min-parallelism 100 -Pn -n -vv {self.target} -oX nmap/portScan')
+        print(self.output)
+        if self.output == None:
+            nmap_query=(f'{self.nmap_path} -sS -p- --open --min-rate 2000 --min-parallelism 100 -Pn -n -vv {self.target} -oX nmap/portScan.xml')
+        else:
+            nmap_query=(f'{self.nmap_path} -sS -p- --open --min-rate 2000 --min-parallelism 100 -Pn -n -vv {self.target} -oX nmap/portScan.xml -oN nmap/{self.output}')
         query = shlex.split(nmap_query)
-        if self.output != None:
-            output_params = ["-oN", self.output]
-            query.append(*output_params)
         print(f"[+] Executing: {nmap_query}")
         print()
-        nmap = subprocess.Popen(query, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = nmap.communicate()
-        error_code = nmap.wait()
-        if error_code:
-            stderr = stderr.decode("utf-8")
-            print(f"[!] ERROR: {stderr}")
+        try:
+            subprocess.check_call(query,stdout=sys.stdout, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as error:
             print()
-            sys.exit(1)
-        stdout = stdout.decode("utf-8")
-        print(stdout) # Need to find a way to output while receiving data
+            print(f"[!] ERROR! Read above and try again")
+            sys.exit(error.returncode)
+        my_parser = parser.NmapXMLOutputParser()
+        my_parser.copyPortsToClipboard()
 
 
     def service_scan ():
         pass
-
-if __name__ == "__main__":
-    scanner = NmapScanner("127.0.0.1")
-    scanner.port_scan()
