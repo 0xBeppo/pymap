@@ -40,8 +40,8 @@ class NmapScanner:
         print(f"[*] Nmap found at: {stdout}")
         return stdout
             
-    def port_scan (self):
-        if self.output == None:
+    def port_scan (self, basic=False):
+        if self.output == None or basic:
             nmap_query=(f'{self.nmap_path} -sS -p- --open --min-rate 2000 --min-parallelism 100 -Pn -n -vv {self.target} -oX nmap/portScan.xml')
         else:
             nmap_query=(f'{self.nmap_path} -sS -p- --open --min-rate 2000 --min-parallelism 100 -Pn -n -vv {self.target} -oX nmap/portScan.xml -oN nmap/{self.output}')
