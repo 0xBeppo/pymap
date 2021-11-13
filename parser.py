@@ -15,6 +15,7 @@ class NmapXMLOutputParser:
     def __init__(self, file="nmap/portScan.xml") -> None:
         self.file = file
         self.up_machines = self.get_machines()
+        self.ports = ""
 
     def get_machineIP(self):
         up_machines = []
@@ -63,8 +64,12 @@ class NmapXMLOutputParser:
             for port in machines[ip]:
                 port_number = port['port_number']
                 ports += port_number +","
-        pyperclip.copy(ports[:-1])
+        self.ports = ports[:-1]
+        pyperclip.copy(self.ports)
         print()
         print('[*] Ports copyed to clipboard!')
         print()
+
+    def get_ports(self):
+        return self.ports
 

@@ -1,0 +1,6 @@
+Host Discovery - ICMP echo -> ping -c1 IP
+OS Detection 		   -> nmap IP -n -Pn -O -T4 --min-parallelism 100 --min-rate 100 -vv -oX os.xml
+SSL Ciphers		   -> nmap IP -p PORTS -n -Pn --script ssl-enum-ciphers -T4 -vv -oX ciphers.xml
+SSL Certs		   -> nmap IP -p PORTS -n -Pn --script ssl-cert -T4 -vv -oX certs.xml
+Service Detection 	   -> nmap TARGET -p PORTS -n -Pn -sV –version-intensity 6 –script banner -T4 -vv -oX services.xml	
+Web Scan		   -> nmap -p PORT --script http-enum --min-parallelism 100 --min-rate 100 -n -Pn IP -oX web.xml

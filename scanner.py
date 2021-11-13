@@ -20,6 +20,7 @@ class NmapScanner:
         self.target = target
         self.output = output
         self.nmap_path = self.locate_nmap()
+        self.ports = ""
 
     def locate_nmap(self):
         query = ["which", "nmap"]
@@ -40,7 +41,6 @@ class NmapScanner:
         return stdout
             
     def port_scan (self):
-        print(self.output)
         if self.output == None:
             nmap_query=(f'{self.nmap_path} -sS -p- --open --min-rate 2000 --min-parallelism 100 -Pn -n -vv {self.target} -oX nmap/portScan.xml')
         else:
@@ -56,7 +56,25 @@ class NmapScanner:
             sys.exit(error.returncode)
         my_parser = parser.NmapXMLOutputParser()
         my_parser.copyPortsToClipboard()
+        self.ports = my_parser.get_ports()
 
 
-    def service_scan ():
-        pass
+    def service_scan (self, ports=False):
+        scope = ""
+        if ports:
+            scope = ports
+        else:
+            scope = self.ports
+        if self.output == None:
+            nmap_query=(f'{self.nmap_path} -p {scope} -n -Pn -sVC -T5 -vv {self.target} -oX nmap/services.xml')
+        else:
+            nmap_query=(f'{self.nmap_path} -p {scope} -n -Pn -sVC -T5 -vv {self.target} -oX nmap/services.xml -oN nmap/{self.output}')
+        query = shlex.split(nmap_query)
+        print(f"[+] Executing: {nmap_query}")
+        print()
+        try:
+            subprocess.check_call(query,stdout=sys.stdout, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as error:
+            print()
+            print(f"[!] ERROR! Read above and try again")
+            sys.exit(error.returncode)

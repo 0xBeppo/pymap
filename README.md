@@ -8,7 +8,7 @@ usage: pymap.py [-h] [--basic] [--port] [--service] [--output NORMAL_OUTPUT] IP
 Python enhancer for nmap
 
 positional arguments:
-  IP                    an integer for the accumulator
+  IP                    The IP of the target machine / network
 
 optional arguments:
   -h, --help            show this help message and exit
